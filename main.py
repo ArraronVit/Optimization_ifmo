@@ -1,3 +1,8 @@
+# This is a sample Python script.
+
+# Press ⇧F10 to execute it or replace it with your code.
+# Press Double⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+
 import math
 from matplotlib import pylab
 import numpy
@@ -16,8 +21,8 @@ function_test4 = lambda x: 0.2 * x * math.log10(x) + (x - 2.3) ** 2
 #   return 6*x**2-6*x-12
 
 # a1, b1 = -0.5, 0.5
-a1, b1 = 6.0, 9.9
-e = 0.001
+#a1, b1 = 6.0, 9.9
+e = 0.00001
 
 list_function = [(function_test0, -0.5, 0.5), (function_test1, 6.0, 9.9), (function_test2, 0.0, 2.0 * math.pi),
                  (function_test3, 0.0, 1.0), (function_test4, 0.5, 2.5)]
@@ -34,6 +39,7 @@ def check_time(f, times):
 
 def Dichotomy_method(a, b, f):
     i = 1
+    counter=0
     while math.fabs(a - b) >= e:
         x = (a + b) / 2
         if f(x - e) < f(x + e):
@@ -41,12 +47,14 @@ def Dichotomy_method(a, b, f):
         else:
             a, b = x, b
         table.add_row([i, a, b, x, a - b])
+        counter+=2
         i += 1
-    return x
+    return x, counter
 
 
 def Golden_Section_method(a, b, f):
     i = 1
+    counter=2
     phi = 2 - (1 + math.sqrt(5)) * 0.5
 
     x1 = a + phi * (b - a)
@@ -71,8 +79,9 @@ def Golden_Section_method(a, b, f):
             f2 = f(x2)
             # a, b, x1,f1, x2, f2 = x1, b, x2, f2, b-phi*(b-a), f(x2)
         table.add_row([i, a, b, (x1 + x2) * 0.5, a - b])
+        counter+=1
         i += 1
-    return (x1 + x2) * 0.5
+    return (x1 + x2) * 0.5, counter
 
 
 def fibonacci(n):
@@ -84,6 +93,7 @@ def fibonacci(n):
 
 def Fibonacci_method(a, b, f):
     i = 1
+    counter=2
     n = 0
     while fibonacci(n) < ((b - a) / e):
         n += 1
@@ -109,48 +119,19 @@ def Fibonacci_method(a, b, f):
         #       x2=x1+e
         #      y2=f(x2)
         table.add_row([k + 1, a, b, (a + b) * 0.5, a - b])
+        counter+=1
     #    x2 = x1 + e
     #    y2 = f(x2)
     #    if y1<=y2:
     #        b=y1
     #    else:
     #        a=x1
-    return (a + b) * 0.5
+    return (a + b) * 0.5, counter
 
 
 def parabolic_method(a, b, f):
     i = 1
-
-    x1 = a
-    x2 = (a + b) * 0.5
-    x3 = b
-    f1 = f(x1)
-    f2 = f(x2)
-    f3 = f(x3)
-
-    xm = 0.5 * (x1 + x2 - (f2 - f1) * (x3 - x2) / (x2 - x1) / ((f3 - f1) / (x3 - x1) - (f2 - f1) / (x2 - x1)))
-    # fm=f(xm)
-    last = b
-    while math.fabs(last - xm) >= e:
-        fm = f(xm)
-        if xm < x2:
-            x1 = xm
-            f1 = fm
-        else:
-            x1 = x2
-            x2 = xm
-            f1 = f2
-            f2 = fm
-        last = xm
-        xm = 0.5 * (x1 + x2 - (f2 - f1) * (x3 - x2) / (x2 - x1) / ((f3 - f1) / (x3 - x1) - (f2 - f1) / (x2 - x1)))
-        table.add_row([i, x1, x3, xm, x3 - x1])
-        i += 1
-    return xm
-
-
-def parabolic_method1(a, b, f):
-    i = 1
-
+    counter=3
     x1 = a
     x2 = (a + b) * 0.5
     x3 = b
@@ -162,51 +143,176 @@ def parabolic_method1(a, b, f):
         xm = x2 + 0.5 * ((x3 - x2) * (x3 - x2) * (f1 - f2) - (x2 - x1) * (x2 - x1) * (f3 - f2)) / (
                     (x3 - x2) * (f1 - f2) + (x2 - x1) * (f3 - f2))
         if xm == x2:
-            t = (x1 + x2) / 2.0
+            temp = (x1 + x2) / 2.0
         else:
-            t = xm
-        yt = f(t)
-        if t < x2:
-            if yt < f2:
+            temp = xm
+        ftemp = f(temp)
+        counter+=1
+        if temp < x2:
+            if ftemp < f2:
                 x3 = x2
                 f3 = f2
-                x2 = t
-                f2 = yt
-            elif yt > f2:
-                x1 = t
-                f1 = yt
+                x2 = temp
+                f2 = ftemp
+            elif ftemp > f2:
+                x1 = temp
+                f1 = ftemp
             else:
-                x1 = t
-                f1 = yt
+                x1 = temp
+                f1 = ftemp
                 x3 = x2
                 f3 = f2
                 x2 = (x1 + x3) / 2
                 f2 = f(x2)
-        elif t > x2:
-            if yt < f2:
+                counter+=1
+        elif temp > x2:
+            if ftemp < f2:
                 x1 = x2
                 f1 = f2
-                x2 = t
-                f2 = yt
-            elif yt > f2:
-                x3 = t
-                f3 = yt
+                x2 = temp
+                f2 = ftemp
+            elif ftemp > f2:
+                x3 = temp
+                f3 = ftemp
             else:
                 x1 = x2
                 f1 = f2
-                x3 = t
-                f3 = yt
+                x3 = temp
+                f3 = ftemp
                 x2 = (x1 + x3) / 2
                 f2 = f(x2)
-        i+=1
+                counter+=1
         table.add_row([i, x1, x3, xm, x3 - x1])
-    x = (x1 + x3) / 2;
-    y = f(x);
+        i+=1
+    x = (x1 + x3) *0.5
+    return x, counter
 
-    return x
+
+def brent_method(a, b, f):
+    i = 1
+    counter=1
+
+    gs=(3.0-math.sqrt(5.0))*0.5
+    x = w = v = a+gs*(b-a)
+    #x = w = v =b
+    tol = e * math.fabs(x) + e * 0.1
+    fw = fv = fx = f(x)
+    delta2 = delta = 0
+
+    mid = (a + b)*0.5
+    fract1 = tol * math.fabs(x) + tol*0.25;
+    fract2 = 2.0 * fract1
+
+    while math.fabs(x - mid) > (fract2 - (b - a) *0.5):
+ #       mid = (a + b) * 0.5
+ #       fract1 = tol * math.fabs(x) + tol * 0.25;
+ #       fract2 = 2.0 * fract1
+
+        if math.fabs(delta2) > fract1:
+
+         # try and construct a parabolic method:
+            r = (x - w) * (fx - fv)
+            q = (x - v) * (fx - fw)
+            p = (x - v) * q - (x - w) * r
+            q = 2.0 * (q - r)
+            if q > 0:
+                p = -p
+            q = math.fabs(q)
+            td = delta2
+            delta2 = delta
+         # determine whether a parabolic step is acceptable or not:
+            if(math.fabs(p) >= math.fabs(q * td *0.5 )) or (p <= q * (a - x)) or (p >= q * (b - x)):
+
+            # not, try golden section instead
+                if x >= mid:
+                    delta2 =  a - x
+                else:
+                    delta2=b - x
+                delta = gs * delta2
+
+            else:
+
+            # this's parabolic method:
+                delta = p / q
+                u = x + delta
+                if(((u - a) < fract2) or ((b- u) < fract2)):
+                    if (mid - x) < 0:
+                        delta =-math.fabs(fract1)
+                    else:
+                        delta = math.fabs(fract1)
 
 
-foo = list_function[4]
+        else:
+
+         # golden section:
+            if x >= mid:
+                delta2=a-x
+            else:
+                delta2=b-x
+            delta = gs * delta2
+
+      # update current position:
+        if math.fabs(delta) >= fract1:
+            u=x + delta
+        else:
+            if delta > 0:
+                u= x + math.fabs(fract1)
+            else:
+                u= x - math.fabs(fract1)
+
+        fu = f(u)
+        counter+=1
+        if fu <= fx:
+
+         # good new point is an improvement!
+         # update brackets:
+            if u >= x:
+                a = x
+            else:
+                b = x
+         # update control points:
+            v = w
+            w = x
+            x = u
+            fv = fw
+            fw = fx
+            fx = fu
+
+        else:
+
+         # point u is worse than what we have already,
+         # even so it must be better than one of our endpoints:
+            if u < x:
+                a = u
+            else:
+                b = u
+            if (fu <= fw) or (w == x):
+
+            # however it is at least second best:
+                v = w
+                w = u
+                fv = fw
+                fw = fu
+
+            elif (fu <= fv) or (v == x) or (v == w):
+
+            # third best:
+                v = u
+                fv = fu
+
+        table.add_row([i, a, b, x, b - a])
+        i+=1
+        mid = (a + b) * 0.5
+        fract1 = tol * math.fabs(x) + tol * 0.25;
+        fract2 = 2.0 * fract1
+    return x, counter
+
+
+
+
+
+
+foo = list_function[2]
 a1 = foo[1]
 b1 = foo[2]
 function_test = foo[0]
@@ -219,27 +325,39 @@ pylab.plot([x for x in X], [function_test(x) for x in X])
 pylab.grid(True)
 pylab.show()
 
-# start_time=time.time()
-print('\nlocal minimum of the function by Dichotomy method %s' % Dichotomy_method(a1, b1, function_test))
+
+
+x, counter=Dichotomy_method(a1, b1, function_test)
+print('\nLocal minimum of the function by Dichotomy method %s' % x)
 print(table)
-print('\n Method executed %d times, elapsed time %s' % (
-times, check_time(Dichotomy_method(a1, b1, function_test), times)))
+print(' If method executed %d times, elapsed time %s. Number function calls is %s' % (
+times, check_time(Dichotomy_method(a1, b1, function_test), times), counter))
 table.clear_rows()
 
-print('\nlocal minimum of the function by Golden Section method %s' % Golden_Section_method(a1, b1, function_test))
+x, counter= Golden_Section_method(a1, b1, function_test)
+print('\nLocal minimum of the function by Golden Section method %s' % x)
 print(table)
-print('\n Method executed %d times, elapsed time %s' % (
-times, check_time(Golden_Section_method(a1, b1, function_test), times)))
+print(' If method executed %d times, elapsed time %s. Number function calls is %s' % (
+times, check_time(Golden_Section_method(a1, b1, function_test), times), counter))
 table.clear_rows()
 
-print('\nlocal minimum of the function by Fibonacci method %s' % Fibonacci_method(a1, b1, function_test))
+x, counter=Fibonacci_method(a1, b1, function_test)
+print('\nLocal minimum of the function by Fibonacci method %s' % x)
 print(table)
-print('\n Method executed %d times, elapsed time %s' % (
-times, check_time(Fibonacci_method(a1, b1, function_test), times)))
+print(' If method executed %d times, elapsed time %s. Number function calls is %s' % (
+times, check_time(Fibonacci_method(a1, b1, function_test), times), counter))
 table.clear_rows()
 
-print('\nlocal minimum of the function by Parabolic method %s' % parabolic_method1(a1, b1, function_test))
+x, counter=parabolic_method(a1, b1, function_test)
+print('\nLocal minimum of the function by Parabolic method %s' % x)
 print(table)
-print('\n Method executed %d times, elapsed time %s' % (
-times, check_time(parabolic_method1(a1, b1, function_test), times)))
+print(' If method executed %d times, elapsed time %s. Number function calls is %s' % (
+times, check_time(parabolic_method(a1, b1, function_test), times), counter))
+table.clear_rows()
+
+x, counter=brent_method(a1, b1, function_test)
+print('\nLocal minimum of the function by Brent method %s' % x)
+print(table)
+print(' If method executed %d times, elapsed time %s. Number function calls is %s' % (
+times, check_time(brent_method(a1, b1, function_test), times), counter))
 table.clear_rows()
