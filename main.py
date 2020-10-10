@@ -24,7 +24,7 @@ def dichotomy_method(a, b, f):
     counter = 0
     while math.fabs(a - b) >= e:
         x = (a + b) / 2
-        if f(x - e) < f(x + e):
+        if f(x - e/2) < f(x + e/2):
             a, b = a, x
         else:
             a, b = x, b
@@ -288,20 +288,21 @@ function_test1 = lambda x: math.log10(x - 2) ** 2 + math.log10(10 - x) ** 2 - x 
 function_test2 = lambda x: -3.0 * x * math.sin(0.75 * x) + math.exp(-2.0 * x)
 function_test3 = lambda x: math.exp(3.0 * x) + 5.0 * math.exp(-2.0 * x)
 function_test4 = lambda x: 0.2 * x * math.log10(x) + (x - 2.3) ** 2
-
+function_test5 = lambda x: math.sin(x)
 e = 0.00001
 
 list_function = [(function_test0, -0.5, 0.5),
                  (function_test1, 6.0, 9.9),
                  (function_test2, 0.0, 2.0 * math.pi),
                  (function_test3, 0.0, 1.0),
-                 (function_test4, 0.5, 2.5)]
+                 (function_test4, 0.5, 2.5),
+                 (function_test5, -2 * math.pi, 2 * math.pi)]
 
 list_method = [dichotomy_method, golden_section_method, fibonacci_method, parabolic_method, brent_method]
 
 times = 1000000
 # ===========change here=========
-cortege = list_function[4]
+cortege = list_function[5]
 # ===========change here=========
 a1 = cortege[1]
 b1 = cortege[2]
