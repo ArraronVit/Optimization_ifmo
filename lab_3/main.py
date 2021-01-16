@@ -10,6 +10,7 @@ from random import random
 from dense import DenseMatrix
 from csr import CSRMatrix
 from block import *
+from random import uniform
 
 
 def create_diagonally_dominant_matrix(n):
@@ -23,7 +24,7 @@ def create_diagonally_dominant_matrix(n):
 def generate_random_answers(n):
     answers = []
     for _ in range(n):
-        answer = random()
+        answer = uniform(1.0, 100.0)
         answers.append(answer)
     return answers
 
@@ -123,7 +124,9 @@ print(table.get_string(title=title))
 
 matrix = read_file('matrix_10_10.txt')
 # matrix = read_file('matrix_6_6_dense.txt')
+# matrix = create_diagonally_dominant_matrix(100)
 
+# expected = generate_random_answers(100)
 expected = np.array([-1./3, 1./3, 0, 2.2, 4, 1, 10, 2, 5, 0], np.double)
 # expected = np.array([-1./3, 1./3, 0, 2.2, 4, 1], np.double)
 
@@ -135,17 +138,17 @@ x = np.linalg.solve(matrix, b)
 
 print("Scipy x: ", x)
 
-block_size = 2  # must be multiple to matrix.shape
+block_size = 1  # must be multiple to matrix.shape
 
 lu_block_naive = naive_blu(matrix, block_size)
 l_lu = np.tril(lu_block_naive, -1) + np.eye(len(lu_block_naive))
 u_lu = np.triu(lu_block_naive)
 
-print("Lower triangular matrix: ", l_lu)
-print("Upper triangular matrix: ", u_lu)
+# print("Lower triangular matrix: ", l_lu)
+# print("Upper triangular matrix: ", u_lu)
 
 y = forward_substitution(l_lu, b)
 x = back_substitution(u_lu, y)
-
+print("diff: ", np.linalg.norm(x - expected))
 print("Block LU x: {}\n for block size: {} ".format(x, block_size))
 
