@@ -71,7 +71,6 @@ def read_file(file_name):
 
 
 def naive_blu(original_matrix, n_blocks):
-
     idx = [0]  # vector that indicates the first index in each block of matrix's data
     matrix = original_matrix.copy()
     idx = list(range(0, matrix.shape[0], n_blocks))  # forming list with step n_blocks
@@ -94,6 +93,7 @@ def naive_blu(original_matrix, n_blocks):
         matrix[idx[j]:idx[j + 1], idx[j + 1]:] = np.dot(np.linalg.inv(l_11), a_12)
         # Schur complement
         matrix[idx[j + 1]:, idx[j + 1]:] = a_22 - np.dot(a_21, a_12)
+        __visualize_step(idx, original_matrix, n_blocks, j)
 
     return matrix
 
@@ -101,3 +101,18 @@ def naive_blu(original_matrix, n_blocks):
 def __factor(inx, matrix, n_blocks):  # Factor A11 for each iteration
     a11 = matrix[inx:inx + n_blocks, inx:inx + n_blocks]
     return np.array(a11)
+
+
+def __visualize_step(idx, matrix, n_blocks, position):
+    portrait = np.zeros_like(matrix)
+    portrait.fill(4)
+    portrait[idx[position]:idx[position] + n_blocks, idx[position]:idx[position] + n_blocks].fill(5)  # A11
+    if idx[position] != idx[-1]:
+        portrait[idx[position + 1]:, idx[position]:idx[position + 1]].fill(2)  # a21
+        portrait[idx[position]:idx[position + 1], idx[position + 1]:].fill(2)  # a12
+        portrait[idx[position + 1]:, idx[position + 1]:].fill(1)  # a22
+
+    plt.imshow(portrait)
+    plt.show()
+   
+
