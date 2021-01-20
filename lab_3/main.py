@@ -14,7 +14,7 @@ from random import uniform
 
 
 def create_diagonally_dominant_matrix(n):
-    a = np.random.randint(-4, 1, size=(n, n)).astype(float)
+    a = np.random.randint(-100, 100, size=(n, n)).astype(float)
     for i in range(n):
         off_diag_sum = abs(sum([a[i][j] for j in range(n) if i != j]))
         a[i, i] = off_diag_sum
@@ -122,12 +122,13 @@ for k in np.arange(-10, 1, 1):
 
 print(table.get_string(title=title))
 
-matrix = read_file('matrix_10_10.txt')
+# matrix = read_file('matrix_10_10.txt')
+# matrix = read_file('non_null.txt')
 # matrix = read_file('matrix_6_6_dense.txt')
-# matrix = create_diagonally_dominant_matrix(100)
+matrix = create_diagonally_dominant_matrix(100)
 
-# expected = generate_random_answers(100)
-expected = np.array([-1./3, 1./3, 0, 2.2, 4, 1, 10, 2, 5, 0], np.double)
+expected = generate_random_answers(100)
+# expected = np.array([-1./3, 1./3, 0, 2.2, 4, 1, 10, 2, 5, 0], np.double)
 # expected = np.array([-1./3, 1./3, 0, 2.2, 4, 1], np.double)
 
 b = np.dot(matrix, expected)
@@ -138,17 +139,10 @@ x = np.linalg.solve(matrix, b)
 
 print("Scipy x: ", x)
 
-block_size = 1  # must be multiple to matrix.shape
+block_size = 20  # must be multiple to matrix.shape
+x = solve_lu(matrix, b, 20)
 
-lu_block_naive = naive_blu(matrix, block_size)
-l_lu = np.tril(lu_block_naive, -1) + np.eye(len(lu_block_naive))
-u_lu = np.triu(lu_block_naive)
-
-# print("Lower triangular matrix: ", l_lu)
-# print("Upper triangular matrix: ", u_lu)
-
-y = forward_substitution(l_lu, b)
-x = back_substitution(u_lu, y)
-print("diff: ", np.linalg.norm(x - expected))
-print("Block LU x: {}\n for block size: {} ".format(x, block_size))
-
+print("diff: ", abs(np.mean(x - expected)))
+print("Cond: ", np.linalg.cond(matrix))
+print("Block size: ", block_size)
+print("Block LU x: ", x)
