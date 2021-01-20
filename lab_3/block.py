@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def forward_substitution(L, b):
+def __forward_substitution(L, b):
     # Get number of rows
     n = L.shape[0]
 
@@ -22,7 +22,7 @@ def forward_substitution(L, b):
     return y
 
 
-def back_substitution(U, y):
+def __back_substitution(U, y):
     # Number of rows
     n = U.shape[0]
     # Allocating space for the solution vector
@@ -41,7 +41,20 @@ def back_substitution(U, y):
     return x
 
 
-def lu(A):
+def solve_lu(matrix, b, block_size=1):
+    lu_block_naive = naive_blu(matrix, block_size)
+    l_lu = np.tril(lu_block_naive, -1) + np.eye(len(lu_block_naive))
+    u_lu = np.triu(lu_block_naive)
+
+    # print("Lower triangular matrix: ", l_lu)
+    # print("Upper triangular matrix: ", u_lu)
+
+    y = __forward_substitution(l_lu, b)
+    x = __back_substitution(u_lu, y)
+    return x
+
+
+def __lu(A):
     # Get the number of rows
     n = A.shape[0]
 
@@ -77,7 +90,7 @@ def naive_blu(original_matrix, n_blocks):
 
     for j in range(0, len(idx)):
         # !! single non matrix operation, all the rest ara matrix operations
-        l_11, u_11 = lu(__factor(idx[j], matrix, n_blocks))  # LU decomposition for Factor submatrix A11
+        l_11, u_11 = __lu(__factor(idx[j], matrix, n_blocks))  # LU decomposition for Factor submatrix A11
 
         matrix[idx[j]:idx[j] + n_blocks, idx[j]:idx[j] + n_blocks] = np.tril(l_11, -1) + u_11
 
@@ -114,5 +127,3 @@ def __visualize_step(idx, matrix, n_blocks, position):
 
     plt.imshow(portrait)
     plt.show()
-   
-
